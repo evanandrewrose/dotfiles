@@ -1,4 +1,243 @@
-syntax on
+" options
+""files
+set noexrc                                    " don't load any configuration files
+""ui styles
+set number                                    " shows line numbers
+set showcmd                                   " shows command being typed
+set t_Co=256                                  " enables 256 color (req. for themes)
+""editor style
+set hlsearch                                  " highlight searched-for phrases
+set incsearch                                 " show results for searches as they're typed
+set ruler                                     " displays current line number
+""text options
+set encoding=utf8                             " set encoding scheme
+set textwidth=0                               " no maximum text width when inserted
+""searching
+set ignorecase                                " ignore case in search patterns
+""autocompletion
+set wildmenu                                  " enhanced autocompletion
+set completeopt+=longest,menuone,preview      " preview prototypes
+""comments
+set commentstring="/* %s */"                  " default comment string template
+""tabbing
+set tabstop=4                                 " number of spaces tab translates to
+set expandtab                                 " use spaces instead of tabs
+set softtabstop=4                             " number of spaces for editing operation tabs
+set shiftwidth=4                              " number of spaces for auto indent
+set autoindent                                " copy indent of current line to new line
+set backspace=indent,eol,start                " allow bs over autoindent, line breaks, and start of insert
+""folding
+set fdm=syntax                                " create folds as per indentation
+set foldcolumn=3                              " number of columns to show folding hierarchy
+set foldlevel=99                              " depth of folds to begin a file
+""yanking
+set clipboard+=unnamed                        " use * clipboard
+""smartgf
+let g:smartgf_key = 'gr'                      " bind smartgf to gr, goto references
+""misc
+set nocompatible                              " not using compatibility for vi
+set colorcolumn=99                            " enable margin
+""theme
+set guifont=Monaco:h12                        " set font
+""path
+set path+=.**                                 " add all paths recursively from current dir for find and gf
+set path+=/usr/lib/**                         " add all paths recursively from usr/lib/ for find and gf
+set path+=/usr/include/**                     " add all paths recursively from usr/include/ for find and gf
+""syntax highlighting
+au VimEnter * RainbowParenthesesToggle        " enable rainbow highlighting
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces
 
-" Wrap gitcommit file types at the appropriate length
-filetype indent plugin on
+let UserLibraries=["/usr/include/gtkmm-3.0/types_c.taghl","/usr/include/gtk-2.0/types_c.taghl"]
+
+syntax on                                     " turn syntax highlighting on
+
+" vundle bundles
+set rtp+=~/.vim/bundle/Vundle.vim             " add vundle to runtime path
+filetype off                                  " required for vundle to operate
+call vundle#begin()                           " init vundle
+
+Plugin 'gmarik/vundle'                        " vundle package
+Plugin 'The-NERD-tree'                        " show file hierarchy
+Plugin 'taglist.vim'                          " show classes/functinos/etc
+Plugin 'restore_view.vim'                     " restore location/folds/etc
+Plugin 'vim-scripts/a.vim'                    " 'a plugin', jump .h -> .cpp with :A
+Plugin 'Command-T'                            " fuzzy-search for files
+Plugin 'flazz/vim-colorschemes'               " color themes
+Plugin 'gorkunov/smartgf.vim'                 " smart 'goto file, gf'
+Plugin 'bronson/vim-trailing-whitespace'      " highlight trailing whitespace
+Plugin 'EasyColour'                           " easy color definitions
+Plugin 'kien/rainbow_parentheses.vim'         " parenthesis highlighting
+Plugin 'tpope/vim-fugitive'                   " git wrapper
+Plugin 'tpope/vim-sensible'                   " sensible defaults
+Plugin 'fugitive.vim'                         " git plugin
+Plugin 'airblade/vim-gitgutter'               " git gutter plugin
+Plugin 'Conque-GDB'                           " gdb support
+Plugin 'bling/vim-airline'                    " pretty guide lines at botttom
+Plugin 'edkolev/tmuxline.vim'                 " ^^ tmux support
+Plugin 'jistr/vim-nerdtree-tabs'              " one nerd tree
+Plugin 'wting/rust.vim'                       " rust syntax
+Plugin 'mileszs/ack.vim'                      " ack searching
+Plugin 'newclear/vim-pyclewn'                 " gdb frontend
+Plugin 'Tabular'                              " autoformat around =
+Plugin 'ervandew/supertab'                    " tab completion
+Plugin 'eparreno/vim-l9'                      " autocomplpop dependency
+Plugin 'othree/vim-autocomplpop'              " type autocompletion
+Plugin 'vim-scripts/vawa.vim'                 " current symbol hl (php)
+if !empty(glob("~/Repos/rust"))               " if we have rust source...
+    Plugin 'racer-rust/vim-racer'             " rust autocomplete
+endif
+Plugin 'davidhalter/jedi-vim'                 " python autocomplete
+Plugin 'kchmck/vim-coffee-script'             " coffee-script
+
+" Jedi
+let g:jedi#popup_on_dot = 0
+
+" C Plugins
+"
+" To use these, you must (at least)
+"
+" 1. Generate a tag file in the project directory:
+"
+"    find -name "*.[cChH]" | etags -
+"
+" This allows you to jump to tags with C-]. Easytags will update your tags
+" file as you edit, so you only have to do this once per project.
+"
+" 2. Create a .clang_complete file in project directory:
+"
+"    echo "-isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include" >> .clang_complete
+"    echo "-I/home/evan/Repos/linux/arch/x86/include" >> .clang_complete
+"    echo "-Iarch/x86/include/generated" >> .clang_complete
+"    echo "-include /home/evan/Repos/linux/include/linux/kconfig.h" >> .clang_complete
+"
+" This allows clang to find the necessary files for compilation. You can
+" try running make -n to see what files are included for the project, grab
+" them and throw them in this file.
+"
+" After setting this up, syntastic will block on saves with a compile checker.
+" If that compile checker is let g:syntastic_c_checkers = ['make'], then it
+" may be quite slow.
+
+Plugin 'xolox/vim-misc'                       " required for easytags
+Plugin 'xolox/vim-easytags'
+Plugin 'scrooloose/syntastic'
+Plugin 'Rip-Rip/clang_complete'               " c/cpp autocomplete
+Plugin 'vim-scripts/TagHighlight'             " extra tag highlighting
+
+" easytags
+let g:easytags_async = 1
+let g:easytags_dynamic_files = 1
+let g:easytags_events = ['CursorHold']
+let g:easytags_by_filetype = 1
+
+set tags=$PWD/tags;,$PWD/TAGS;,tags,TAGS,~/.vimtags
+
+" syntastic
+let g:syntastic_c_checkers = ['make']
+let b:easytags_auto_highlight = 0
+:autocmd FileType c   let b:easytags_auto_highlight = 1
+:autocmd FileType cpp let b:easytags_auto_highlight = 1
+
+" clang_complete
+let g:clang_complete_auto = 1
+
+" clang maps
+let g:clang_jumpto_declaration_key = "gd"
+
+" Supertab
+let g:SuperTabDefaultCompletionType = "<c-n>"
+
+"" ycm
+"let g:ycm_show_diagnostics_ui = 0                 " let syntastic err check
+"let g:ycm_collect_identifiers_from_tags_files = 1 " use catgs
+
+call vundle#end()                             " uninit vundle
+filetype plugin indent on                     " return filetype identification
+
+" mappings
+"" encoding issues with function keys
+map <Esc>OP <F1>
+map <Esc>OQ <F2>
+map <Esc>OR <F3>
+map <Esc>OS <F4>
+map <Esc>[16~ <F5>
+map <Esc>[17~ <F6>
+map <Esc>[18~ <F7>
+map <Esc>[19~ <F8>
+map <Esc>[20~ <F9>
+map <Esc>[21~ <F10>
+map <Esc>[23~ <F11>
+map <Esc>[24~ <F12>
+"" plugins
+map <f2> :NERDTreeTabsToggle<CR>
+map <f3> :TlistToggle<CR>
+map <f4> :CommandT<CR>
+map <f5> :make<CR>
+map <C-n> :Ack 
+"" windows
+map <C-w>\| :vsplit<CR>
+map <C-w>- :split<CR>
+map <C-]> :GitGutterNextHunk<CR>
+map <C-[> :GitGutterPrevHunk<CR>
+map <C-\> :GitGutterPreviewHunk<CR>
+"" file-specific maps
+autocmd BufNewFile,BufRead *.rs map <f5> :RustRun<CR>
+autocmd BufNewFile,BufRead *.asm map <f5> :make run<CR>
+autocmd BufNewFile,BufRead *.asm set ft=nasm
+autocmd BufNewFile,BufRead *.s set ft=nasm
+"" autocomplete
+""" allow hitting enter to autocomplete
+:inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+""" preselect autocomplete options
+inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
+  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
+  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+"" navigation
+noremap <C-j> gT
+noremap <C-k> gt
+"" other
+map <C-h> :Hexmode<CR>
+cmap w!! w !sudo tee > /dev/null %
+
+" bind <f9> to show color scheme
+nmap <f9> :so $VIMRUNTIME/syntax/hitest.vim<CR>
+
+" bind <f10> to show what color tags are under the cursor
+nmap <f10> :call <SID>SynStack()<CR>
+function! <SID>SynStack()
+      if !exists("*synstack")
+              return
+                endif
+                  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+              endfunc
+
+" highlight symbols matching symbol under cursor
+":autocmd CursorMoved * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+
+"" theme select
+colorscheme Tomorrow-Night
+colorscheme Tomorrow-Night
+hi Label ctermfg=black
+hi Class ctermfg=blue
+hi Member ctermfg=99CCFF
+hi LineNr ctermfg=lightgray
+
+"" more colors for ctags
+hi cStatement ctermfg=white
+hi level16 ctermfg=lightgray
+
+
+"" gutter colors
+highlight GitGutterAdd ctermbg=darkgray
+highlight GitGutterAdd ctermfg=green
+highlight SignColumn ctermbg=darkgray
+
+"" enable margins
+highlight OverLength ctermbg=gray ctermfg=black guibg=gray
+match OverLength /\%99v.\+/
+
+"" transparent background
+hi Normal ctermbg=none

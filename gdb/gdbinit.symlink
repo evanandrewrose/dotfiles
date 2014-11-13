@@ -1,0 +1,135 @@
+# Dump threads to ~/threads.dump
+define dump_threads
+    set pagination off
+    set logging overwrite on
+    set logging file ~/threads.dump
+    set logging on
+    thread apply all bt
+    set logging off
+    set pagination on
+end
+
+# Dump threads to ~/threads.dump
+define dump_threads_full
+    set pagination off
+    set logging overwrite on
+    set logging file ~/threads_full.dump
+    set logging on
+    thread apply all bt full
+    set logging off
+    set pagination on
+end
+
+# The following functions are used to set GDB variables to the outupt of shell
+# commands. set_shell_x where x is the number of arguments passed to the shell
+# command plus one. No suffix versions of the functions are for char setting.
+#
+# Usage:
+#
+# > set_shell_2 tux uname -a
+# > print $tux
+# $3 = "Linux evan-GE70-2PE"
+define set_shell_1
+    shell echo set \$$arg0=\'$($arg1)\' > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_2
+    shell echo set \$$arg0=\'$($arg1 $arg2)\' > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_3
+    shell echo set \$$arg0=\'$($arg1 $arg2 $arg3)\' > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_4
+    shell echo set \$$arg0=\'$($arg1 $arg2 $arg3 $arg4)\' > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_5
+    shell echo set \$$arg0=\'$($arg1 $arg2 $arg3 $arg4 $arg5)\' > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+# Set vars to string repesentation of shell outputs.
+define set_shell_1_s
+    shell echo set \$$arg0=\"$($arg1)\" > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_2_s
+    shell echo set \$$arg0=\"$($arg1 $arg2)\" > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_3_s
+    shell echo set \$$arg0=\"$($arg1 $arg2 $arg3)\" > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_4_s
+    shell echo set \$$arg0=\"$($arg1 $arg2 $arg3 $arg4)\" > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_5_s
+    shell echo set \$$arg0=\"$($arg1 $arg2 $arg3 $arg4 $arg5)\" > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+# Set vars to integer repesentation of shell outputs.
+define set_shell_1_d
+    shell echo set \$$arg0=$($arg1) > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_2_d
+    shell echo set \$$arg0=$($arg1 $arg2) > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_3_d
+    shell echo set \$$arg0=$($arg1 $arg2 $arg3) > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_4_d
+    shell echo set \$$arg0=$($arg1 $arg2 $arg3 $arg4) > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+define set_shell_5_d
+    shell echo set \$$arg0=$($arg1 $arg2 $arg3 $arg4 $arg5) > /tmp/foo.gdb
+    source /tmp/foo.gdb
+end
+
+# Sets $res = 't' is $arg0 is a substring of $arg1.
+define substr
+    shell if [[ $arg1 == *$arg0* ]]; then echo t > /tmp/foo.gdb; else echo f > /tmp/foo.gdb; fi
+    set_shell_2 res cat /tmp/foo.gdb
+end
+
+# Sets $res = 't' is $arg0 is a substring of the current working directory.
+# Useful for setting project-based configs.
+define substr_pwd
+    shell if [[ $(pwd) == *$arg0* ]]; then echo t > /tmp/foo.gdb; else echo f > /tmp/foo.gdb; fi
+    set_shell_2 res cat /tmp/foo.gdb
+end
+
+# Project-specific settings:
+define neovim
+    echo Loading nvim configuration.\n
+    file "/usr/local/bin/nvim"
+    set_shell_2_d id pgrep nvim
+    eval "attach %d", $id
+    c
+end
+
+# If the pwd has neovim in it, load neovim settings.
+substr_pwd neovim
+if $res == 't'
+    neovim
+end

@@ -1,0 +1,153 @@
+# remove all bindings
+unbind -a
+
+# run default configuration (clean this)
+set -g assume-paste-time 1
+set -g base-index 1
+set -g bell-action any
+set -g bell-on-alert off
+set -g default-command ""
+set -g default-shell "/usr/bin/zsh"
+set -g default-terminal "screen"
+set -g destroy-unattached off
+set -g detach-on-destroy on
+set -g display-panes-active-colour colour20
+set -g display-panes-colour colour196
+set -g display-panes-time 1000
+set -g display-time 750
+set -g history-limit 10000
+set -g lock-after-time 0
+set -g lock-command "lock -np"
+set -g lock-server on
+set -g message-attr none
+set -g message-bg colour235
+set -g message-command-attr none
+set -g message-command-bg colour239
+set -g message-command-fg colour250
+set -g message-fg colour196
+set -g message-limit 20
+set -g pane-active-border-bg default
+set -g pane-active-border-fg colour46
+set -g pane-border-bg default
+set -g pane-border-fg colour235
+set -g prefix C-a
+set -g renumber-windows off
+set -g repeat-time 500
+set -g set-remain-on-exit off
+set -g set-titles off
+set -g set-titles-string "#S:#I:#W - "#T""
+set -g status on
+set -g status-attr none
+set -g status-bg colour235
+set -g status-fg colour130
+set -g status-interval 15
+set -g status-justify left
+set -g status-keys vi
+set -g status-left "#[fg=colour1,bg=colour109,bold] #S #[fg=colour109,bg=colour236,nobold,nounderscore,noitalics]"
+set -g status-left-attr none
+set -g status-left-bg default
+set -g status-left-fg default
+set -g status-left-length 100
+set -g status-position bottom
+set -g status-right "#[fg=colour239,bg=colour236,nobold,nounderscore,noitalics]#[fg=colour250,bg=colour239] %Y-%m-%d  %H:%M #[fg=colour109,bg=colour239,nobold,nounderscore,noitalics]#[fg=colour1,bg=colour109] #h "
+set -g status-right-attr none
+set -g status-right-bg default
+set -g status-right-fg default
+set -g status-right-length 100
+set -g status-utf8 on
+set -g terminal-overrides "*88col*:colors=88,*256col*:colors=256,xterm*:XT:Ms=\E]52;%p1%s;%p2%s\007:Cc=\E]12;%p1%s\007:Cr=\E]112\007:Cs=\E[%p1%d q:Csr=\E[2 q,screen*:XT"
+set -g update-environment "DISPLAY SSH_ASKPASS SSH_AUTH_SOCK SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY"
+set -g visual-activity on
+set -g visual-bell off
+set -g visual-content off
+set -g visual-silence off
+set -g word-separators " -_@"
+
+# prefix is Ctrl-a
+set -g prefix C-a
+bind C-a send-prefix
+unbind C-b
+
+set -sg escape-time 1
+set -g base-index 1
+setw -g pane-base-index 1
+
+# mouse works as expected
+setw -g mode-mouse on
+set -g mouse-select-pane on
+set -g mouse-resize-pane on
+set -g mouse-select-window on
+set -g mouse-utf8 on
+
+setw -g monitor-activity on
+set -g visual-activity on
+
+set -g mode-keys vi
+set -g history-limit 10000
+
+## colors 256 bit
+#set -g default-terminal "screen-256color"
+
+# extra commands for interacting with the ICCCM clipboard
+bind C-c run "tmux save-buffer - | xclip -i -sel clipboard"
+bind C-v run "tmux set-buffer \"$(xclip -o -sel clipboard)\"; tmux paste-buffer"
+
+unbind '"'
+unbind %
+unbind C-k
+
+# default statusbar colors
+set-option -g status-bg colour235 #base02
+set-option -g status-fg colour130 #yellow
+set-option -g status-attr default
+
+# default window title colors
+set-window-option -g window-status-fg colour33 #base0
+set-window-option -g window-status-bg default
+#set-window-option -g window-status-attr dim
+
+# active window title colors
+set-window-option -g window-status-current-fg colour196 #orange
+set-window-option -g window-status-current-bg default
+#set-window-option -g window-status-current-attr bright
+
+# pane border
+set-option -g pane-border-fg colour235 #base02
+set-option -g pane-active-border-fg colour46 #base01
+
+# message text
+set-option -g message-bg colour235 #base02
+set-option -g message-fg colour196 #orange
+
+# pane number display
+set-option -g display-panes-active-colour colour20 #blue
+set-option -g display-panes-colour colour196 #orange
+
+# clock
+set-window-option -g clock-mode-colour colour40 #green
+
+# tmux + vim
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+bind | split-window -h
+bind - split-window -v
+
+bind x kill-pane
+bind c new-window
+bind d detach-client
+bind z resize-pane -Z
+
+# copying
+setw -g mode-keys vi
+unbind [
+bind Escape copy-mode
+unbind p
+bind p paste-buffer
+bind-key -t vi-copy 'v' begin-selection
+bind-key -t vi-copy 'y' copy-selection
+
+# moving between windows with vim movement keys
+bind -r C-h select-window -t :-
+bind -r C-l select-window -t :+

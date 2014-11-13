@@ -1,8 +1,14 @@
-# shortcut to this dotfiles path is $ZSH
-export ZSH=$HOME/.dotfiles
+# Path to your oh-my-zsh configuration.
+export ZSH=~/.oh-my-zsh
+source $ZSH/oh-my-zsh.sh
 
-# your project folder that we can `c [tab]` to
-export PROJECTS=~/Code
+# shortcut to this dotfiles path is $ZSH
+export DOTFILES=$HOME/.dotfiles
+export WORK_DOTFILES=$HOME/.dotfiles-videon
+
+# initialize autocomplete here, otherwise functions won't be loaded
+autoload -U compinit
+compinit
 
 # use .localrc for SUPER SECRET CRAP that you don't
 # want in your public, versioned repo.
@@ -13,7 +19,19 @@ fi
 
 # all of our zsh files
 typeset -U config_files
-config_files=($ZSH/**/*.zsh)
+config_files=($DOTFILES/**/*.zsh)
+
+# work zsh files
+typeset -U work_config_files
+if [ -d $WORK_DOTFILES ]; then
+    work_config_files=($WORK_DOTFILES/**/*.zsh)
+fi
+
+# load work files
+for file in ${(M)work_config_files}
+do
+  source $file
+done
 
 # load the path files
 for file in ${(M)config_files:#*/path.zsh}
@@ -27,10 +45,6 @@ do
   source $file
 done
 
-# initialize autocomplete here, otherwise functions won't be loaded
-autoload -U compinit
-compinit
-
 # load every completion after autocomplete loads
 for file in ${(M)config_files:#*/completion.zsh}
 do
@@ -38,3 +52,71 @@ do
 done
 
 unset config_files
+
+# Antigen setup.
+antigen use oh-my-zsh
+
+# Bundles from the default repo (robbyrussell's oh-my-zsh).
+antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle heroku
+antigen bundle pip
+antigen bundle lein
+antigen bundle command-not-found
+antigen theme edvardm
+antigen apply
+
+# Set to this to use case-sensitive completion
+# CASE_SENSITIVE="true"
+
+# Comment this out to disable bi-weekly auto-update checks
+# DISABLE_AUTO_UPDATE="true"
+
+# Uncomment to change how many often would you like to wait before auto-updates occur? (in days)
+# export UPDATE_ZSH_DAYS=13
+
+# Uncomment following line if you want to disable colors in ls
+# DISABLE_LS_COLORS="true"
+
+# Uncomment following line if you want to disable autosetting terminal title.
+# DISABLE_AUTO_TITLE="true"
+
+# Uncomment following line if you want red dots to be displayed while waiting for completion
+# COMPLETION_WAITING_DOTS="true"
+
+# Path
+export PATH=/usr/local/bin:/opt/clion/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/opt/STM/STLinux-2.4/host/bin:/usr/lib/python2.7/dist-packages/django/bin/:/home/e/.cargo/bin
+export PATH=$PATH:~/Projects/native/player/target/usr/local/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/e/Projects/native/player/target/usr/local/lib
+export SVN_EDITOR=/usr/bin/vi
+export GIT_EDITOR=/usr/bin/vi
+export EDITOR=/usr/bin/vi
+export RUST_SRC_PATH=~/Repos/rust/src
+
+# turn off autocorrect
+unsetopt correct
+
+# colorized man pages
+man() {
+    env \
+        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+        LESS_TERMCAP_md=$(printf "\e[1;31m") \
+        LESS_TERMCAP_me=$(printf "\e[0m") \
+        LESS_TERMCAP_se=$(printf "\e[0m") \
+        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+        LESS_TERMCAP_ue=$(printf "\e[0m") \
+        LESS_TERMCAP_us=$(printf "\e[1;32m") \
+            man "$@"
+}
+
+# Mouse Sensitivity
+# xinput --set-prop "Logitech G100s Optical Gaming Mouse" "Device Accel Constant Deceleration" 5 > /dev/null 2>&1
+
+# Get core dumps
+ulimit -c unlimited
+limit coredumpsize unlimited
+
+# start tmux
+if [ "$TMUX" = "" ]; then
+    tmux
+fi

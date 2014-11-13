@@ -1,0 +1,69 @@
+" options
+""files
+set noexrc                                    " don't load any configuration files
+""ui styles
+set number                                    " shows line numbers
+set showcmd                                   " shows command being typed
+set t_Co=256                                  " enables 256 color (req. for themes)
+""editor style
+set hlsearch                                  " highlight searched-for phrases
+set incsearch                                 " show results for searches as they're typed
+set ruler                                     " displays current line number
+""text options
+set encoding=utf8                             " set encoding scheme
+set textwidth=0                               " no maximum text width when inserted
+""searching
+set ignorecase                                " ignore case in search patterns
+""autocompletion
+set wildmenu                                  " enhanced autocompletion
+""comments
+set commentstring="/* %s */"                  " default comment string template
+""tabbing
+set tabstop=4                                 " number of spaces tab translates to
+set expandtab                                 " use spaces instead of tabs
+set softtabstop=4                             " number of spaces for editing operation tabs
+set shiftwidth=4                              " number of spaces for auto indent
+set autoindent                                " copy indent of current line to new line
+set backspace=indent,eol,start                " allow bs over autoindent, line breaks, and start of insert
+""folding
+set fdm=syntax                                " create folds as per indentation
+set foldcolumn=3                              " number of columns to show folding hierarchy
+set foldlevel=99                              " depth of folds to begin a file
+""yanking
+set clipboard+=unnamed                        " use * clipboard
+""misc
+set nocompatible                              " not using compatibility for vi
+set colorcolumn=79                            " enable margin
+""theme
+set guifont=Monaco:h12                        " set font
+""path
+set path+=.**                                 " add all paths recursively from current dir for find and gf
+set path+=/usr/lib/**                         " add all paths recursively from usr/lib/ for find and gf
+set path+=/usr/include/**                     " add all paths recursively from usr/include/ for find and gf
+
+syntax on                                     " turn syntax highlighting on
+
+" mappings
+map <f2> :NERDTreeTabsToggle<CR>
+map <f3> :TlistToggle<CR>
+map <f4> :CommandT<CR>
+map <f5> :make<CR>
+map <C-n> :Ack 
+map <C-j> gT
+map <C-k> gt
+cmap w!! w !sudo tee > /dev/null %
+
+"" theme select
+colorscheme Tomorrow-Night
+colorscheme Tomorrow-Night
+hi Label ctermfg=black
+hi Class ctermfg=blue
+hi Member ctermfg=99CCFF
+hi LineNr ctermfg=lightgray
+
+""enable margins
+highlight OverLength ctermbg=gray ctermfg=black guibg=gray
+match OverLength /\%79v.\+/
+
+""transparent background
+hi Normal ctermbg=none
