@@ -1,0 +1,140 @@
+#!/bin/bash
+
+# This script is used for synchronizing remote branches to local branches.
+#
+# Usage:
+#
+# git fync branch [-u remote:~origin] [-h] [-d directory~.]
+
+# Fail on non-zero return code / unset variable usage.
+set -o errexit
+set -o nounset
+
+function help {
+    echo "git fync - synchronize remote branches to local branches."
+    echo
+    echo "git fync branch [-u remote:~origin] [-h] [-d directory~.]"
+    echo
+    echo "EXAMPLES:"
+    echo
+    echo "git fync -b features/integrate-foo-bar"
+    echo
+    echo -e "\tFetch from origin and create a local branch features/integrate-foo-bar that tracks origin/features/integrate-foo-bar."
+    echo
+    echo "git fync -b features/integrate-foo-bar -d ~/p"
+    echo
+    echo -e "\tFetch from origin and create a local branch features/integrate-foo-bar that tracks origin/features/integrate-foo-bar in repo ~/p."
+    echo
+    echo "git fync -b features/integrate-foo-bar -u other-remote"
+    echo
+    echo -e "\tFetch from other-remote and create a local branch features/integrate-foo-bar that tracks other-remote/features/integrate-foo-bar."
+    echo
+}
+
+function ref_to_shortname {
+    REF="$1"
+
+    # Remove refs/
+    REF=`echo $REF | grep -Po '/\K.*'`
+    # Remove heads/
+    REF=`echo $REF | grep -Po '/\K.*'`
+
+    echo $REF
+}
+
+ORIGINAL_DIR=`pwd`
+
+BRANCH=""
+REMOTE=""
+REPO_DIR=""
+
+# Parse arguments.
+while getopts "b:u:d:h" opt; do
+    case $opt in
+        b)
+            BRANCH=$OPTARG
+            ;;
+        u)
+            REMOTE=$OPTARG
+            ;;
+        d)
+            REPO_DIR=$OPTARG
+            ;;
+        h)
+            help
+            exit 0
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+# Verify argument.
+if [[ -z ${BRANCH:-} ]]; then
+    echo "Error: Not enough arguments." >&2
+    echo
+    help
+    exit -1
+fi
+
+# Default remote.
+if [[ -z ${REMOTE:-} ]]; then
+    REMOTE="origin"
+fi
+
+# Default remote.
+if [[ -z ${REPO_DIR:-} ]]; then
+    REPO_DIR="."
+fi
+
+# Relocate.
+cd $REPO_DIR
+
+# Fetch.
+git fetch
+
+# Collect all refs.
+REFS=`git ls-remote --heads ${REMOTE}`
+
+# Match case (lowercase) both search branch and refs.
+BRANCH_LOWER=`echo $BRANCH | tr '[:upper:]' '[:lower:]'`
+REFS_LOWER=`echo $REFS | tr '[:upper:]' '[:lower:]'`
+
+# Ensure only one branch matches the search.
+NUM_BRANCHES=`echo $REFS_LOWER | grep ${BRANCH_LOWER} -o | wc -w`
+
+# If there are multiple candidates, inform the user and err out.
+if [[ "1" != "$NUM_BRANCHES" ]]; then
+    echo "Error: Branch '${BRANCH}' does not indicate a unique branch."
+    echo
+    echo "Candidates:"
+    echo
+    for REF in $REFS; do
+        REF_LOWER=`echo $REF | tr '[:upper:]' '[:lower:]'`
+        # Ensure ref and not hash.
+        if [[ "$REF_LOWER" == refs/* ]]; then
+            # Operate only on branches requested.
+            if [[ "$REF_LOWER" == *$BRANCH_LOWER* ]]; then
+                REF=`ref_to_shortname $REF`
+                echo -e "\t[ ${REF} ]"
+            fi
+        fi
+    done
+    exit 1
+fi
+
+for REF in $REFS; do
+    # Ensure ref and not hash.
+    REF_LOWER=`echo $REF | tr '[:upper:]' '[:lower:]'`
+    if [[ "$REF_LOWER" == refs/* ]]; then
+        # Operate only on branches requested.
+        if [[ "$REF_LOWER" == *$BRANCH_LOWER* ]]; then
+            CURRENT_BRANCH=`ref_to_shortname $REF`
+
+            git checkout -b "$CURRENT_BRANCH" --track "${REMOTE}/${CURRENT_BRANCH}"
+        fi
+    fi
+done
