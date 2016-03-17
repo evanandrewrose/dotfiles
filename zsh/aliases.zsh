@@ -16,3 +16,4 @@ alias plop='git stash' # restart input daemon
 alias pop='git stash pop' # restart input daemon
 alias less='less -R' # less colors
 alias nocolor='sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"'
+alias emacs='TERM=xterm-256color emacs -nw'
