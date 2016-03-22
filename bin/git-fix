@@ -1,0 +1,11 @@
+#!/bin/sh
+
+DIFF_FILES=`git diff | grep "^diff"`
+FILES=""
+for x in `echo ${DIFF_FILES}`; do
+    if [[ ! "${x}" == "diff" ]] && [[ ! "${x}" =~ ^--* ]]; then
+        FILES="${FILES} `echo $x | cut -f 2`"
+    fi
+done
+
+vim -p ${FILES}
