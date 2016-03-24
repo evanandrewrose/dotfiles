@@ -59,7 +59,6 @@ set -g terminal-overrides "*88col*:colors=88,*256col*:colors=256,xterm*:XT:Ms=\E
 set -g update-environment "DISPLAY SSH_ASKPASS SSH_AUTH_SOCK SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY"
 set -g visual-activity on
 set -g visual-bell off
-set -g visual-content off
 set -g visual-silence off
 set -g word-separators " -_@"
 
