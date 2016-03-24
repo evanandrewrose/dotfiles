@@ -1,0 +1,42 @@
+#!/usr/bin/python
+
+import sys
+
+def convert_line(line):
+    line = line[1:] # Trim the leading '#' off.
+
+    divider = get_divider(line)
+    file_location = line.split(divider)[1][:-1] # [:-1] to remove newline...
+    function_info = line.split(divider)[0]
+
+    line = file_location + " [" + function_info + "]\n"
+
+    return line
+
+def line_is_part_of_source_bt(line):
+    divider = get_divider(line)
+    return divider != None and line[0] == "#"
+
+def get_divider(line):
+    if " at " in line:
+        return " at "
+    if " from " in line:
+        return " from "
+
+    return None
+
+def main():
+    output = ""
+    file = open(sys.argv[1])
+    for line in file.readlines():
+        if line_is_part_of_source_bt(line):
+            converted_line = convert_line(line)
+            output += converted_line
+        else:
+            output += line
+
+    print(output)
+
+
+if __name__ == "__main__":
+    main()
