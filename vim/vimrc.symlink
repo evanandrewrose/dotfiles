@@ -131,14 +131,16 @@ let g:easytags_async = 1
 let g:easytags_dynamic_files = 1
 let g:easytags_events = ['CursorHold']
 let g:easytags_by_filetype = 1
+let g:easytags_on_cursorhold = 0
+let g:easytags_auto_update = 0
 
 set tags=$PWD/tags;,$PWD/TAGS;,tags,TAGS,~/.vimtags
 
 " syntastic
 let g:syntastic_c_checkers = ['make']
 let b:easytags_auto_highlight = 0
-:autocmd FileType c   let b:easytags_auto_highlight = 1
-:autocmd FileType cpp let b:easytags_auto_highlight = 1
+:autocmd FileType c   let b:easytags_auto_highlight = 0
+:autocmd FileType cpp let b:easytags_auto_highlight = 0
 
 " clang_complete
 let g:clang_complete_auto = 1
