@@ -84,7 +84,7 @@ antigen apply
 # COMPLETION_WAITING_DOTS="true"
 
 # Path
-export PATH=/usr/local/bin:/opt/clion/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/opt/STM/STLinux-2.4/host/bin:/usr/lib/python2.7/dist-packages/django/bin/:/home/e/.cargo/bin
+export PATH=/usr/local/bin:/opt/clion/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/opt/STM/STLinux-2.4/host/bin:/usr/lib/python2.7/dist-packages/django/bin/:/home/e/.cargo/bin:/home/evan/.local/bin/
 export PATH=$PATH:~/Projects/native/player/target/usr/local/bin
 export PATH=$PATH:~/.dotfiles/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
